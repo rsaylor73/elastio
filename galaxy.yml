@@ -1,0 +1,13 @@
+namespace: elastio
+name: bac
+version: 0.1.0
+readme: README.md
+authors:
+  - Greg Wojtak (https://github.com/gwojtak)
+description: null
+license_file: COPYING
+tags: [elastio, backup]
+repository: https://github.com/gwojtak/elastio.bac
+documentation: null
+homepage: https://github.com/gwojtak/elastio.bac
+issues: null

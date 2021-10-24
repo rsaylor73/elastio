@@ -1,0 +1,43 @@
+---
+- name: Elastio tests
+  hosts: 
+   - ubuntu.local
+  collections:
+    - elastio.bac
+
+  tasks:
+    - name: test elastio vault facts
+      elastio.bac.elastio_vault_info:
+        filter:
+          - vault_id: default
+
+    - name: run a backup
+      elastio.bac.backup:
+        # scalez_stor_url: "http://18.222.56.33:61234"
+        type: file
+        src:
+          - /boot/memtest86+.bin
+          - /boot/memtest86+.elf
+          - /usr/local/bin/composer
+        # vault_name: testing
+      register: backup_output
+
+    - name: find restore points
+      elastio.bac.elastio_recovery_point_info:
+        host: ubuntu
+
+    - name: add a user
+      user:
+        name: testerx
+        state: present
+      register: user_output
+      become: true
+
+    - name: debug
+      ansible.builtin.debug:
+        msg: "{{ backup_output }}"
+    
+    - name: debug user
+      ansible.builtin.debug:
+        msg: "{{ user_output }}"
+
