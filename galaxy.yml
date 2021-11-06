@@ -1,13 +1,14 @@
 namespace: elastio
 name: bac
-version: 0.1.0
+version: 0.1.1
 readme: README.md
 authors:
   - Greg Wojtak (https://github.com/gwojtak)
-description: null
+  - Robert Saylor (https://github.com/rsaylor73/elastio)
+description: Ansible collection for the Elastio CLI
 license_file: COPYING
 tags: [elastio, backup]
-repository: https://github.com/gwojtak/elastio.bac
+repository: https://github.com/rsaylor73/elastio
 documentation: null
-homepage: https://github.com/gwojtak/elastio.bac
+homepage: https://github.com/rsaylor73/elastio
 issues: null

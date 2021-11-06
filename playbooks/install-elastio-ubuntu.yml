@@ -1,0 +1,91 @@
+#############################################################
+#                                                           #
+# Elastio : Installation                                    #
+#                                                           #
+# Author: Robert Saylor (https://www.customphpdesign.com)   #
+# Date: Nov 6, 2021                                         #
+#                                                           #
+# This playbook is designed to install Elastio to an Ubuntu #
+# 20.04 host that already has a RSA connection to the       #
+# Ansible server.                                           #
+#                                                           #
+# Usage: ansible-playbook install-elastio-ubuntu.yml        #
+#   --extra-vars "home_directory=ubuntu"                    #
+#                                                           #
+# home_directory: This is the home directory to Ansible.    #
+# IE: /home/ubuntu                                          #
+#############################################################
+
+- hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: target_host
+      prompt: Target hostname or IP Address
+      private: no
+  tasks:
+    - name: "Testing for home directory"
+      fail:
+        msg: "Variable 'home_directory' is undefined"
+      when: "home_directory is undefined"
+
+    - add_host:
+        name: "{{ target_host }}"
+        groups: dynamically_created_hosts
+
+- hosts: dynamically_created_hosts
+  tasks:
+
+    - name: "Installing Ubuntu required packages."
+      become: yes
+      apt:
+        state: present
+        pkg:
+          - unzip
+
+    - name: "Download AWS CLI."
+      command: >
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      args:
+        warn: no
+      ignore_errors: True
+
+    - name: "Unzip AWS CLI."
+      command: >
+        unzip awscliv2.zip
+      args:
+        warn: no
+      ignore_errors: True
+
+    - name: "Install AWS CLI."
+      command: >
+        sudo ./aws/install
+      args:
+        warn: no
+      ignore_errors: True
+
+    - name: "Create AWS credentials directory on target host."
+      file:
+        path: /home/ubuntu/.aws
+        state: directory
+
+    - name: "Copy AWS credentials from localhost to target host."
+      copy:
+        src: "/home/{{home_directory}}/.aws/credentials"
+        dest: /home/ubuntu/.aws/credentials
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+
+    - name: "Download Elastio CLI."
+      command: >
+        curl "https://raw.githubusercontent.com/elastio/elastio-stack/master/scripts/install-elastio.sh" -o "install-elastio.sh"
+      args:
+        warn: no
+      ignore_errors: True
+
+    - name: "Install Elastio CLI."
+      command: >
+        sudo bash ./install-elastio.sh
+      args:
+        warn: no
+      ignore_errors: True
